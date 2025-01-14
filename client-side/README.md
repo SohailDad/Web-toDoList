@@ -1,5 +1,3 @@
-# Web-toDoList in react, node-express, and mysql.
-
 
 # Getting Started with Create React App
 
