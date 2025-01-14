@@ -29,32 +29,33 @@ import axios from "axios";
 
 function App() {
 
-  // const [todos,setTodos] = useState(0);
+  const [todos, setTodos] = useState([]);
   const [text, setText] = useState('');
   const url = 'http://localhost:3000/';
 
-  const getTodos = async ()=> {
+  const getTodos = async () => {
     try {
       const response = await axios.get(`${url}/todos`)
       console.log("Your get API data : ", response);
+      setTodos([...todos, response.data])
     } catch (error) {
-      console.error("Network error...!",error)
+      console.error("Network error...!", error)
     }
   }
 
   useEffect(() => {
-   getTodos();
+    getTodos();
   }, [])
-  
 
-  const addTodos = async ()=>{
-    if (text.trim()==='') return;
+
+  const addTodos = async () => {
+    if (text.trim() === '') return;
     try {
-      const response = await axios.post(`${url}/todos`,{text});
-      console.log("Check Post API data:",response);  //for testing 
+      const response = await axios.post(`${url}/todos`, { text });
+      console.log("Check Post API data:", response);  //for testing 
       setText('');
     } catch (error) {
-      console.error("Network Error...!",error)
+      console.error("Network Error...!", error)
     }
   }
 
@@ -69,9 +70,9 @@ function App() {
             aria-label="Recipient's username"
             aria-describedby="basic-addon2"
             value={text}
-            onChange={(e)=>setText(e.target.value)}
+            onChange={(e) => setText(e.target.value)}
           />
-          <Button variant="btn btn-primary" id="button-addon2" onClick={()=>addTodos()}>
+          <Button variant="btn btn-primary" id="button-addon2" onClick={() => addTodos()}>
             Add ToDos
           </Button>
         </InputGroup>
@@ -80,13 +81,17 @@ function App() {
       <div className='d-flex flex-row justify-content-center align-content-center'>
         <Table striped bordered hover variant="light" className='w-50'>
           <tbody>
-            <tr>
-              <td>Name of the users{text}.</td>
-              <td className='w-25'>
-                <Button className='btn btn-success mx-1'>Update</Button>
-                <Button className='btn btn-danger'>Delete</Button>
-              </td>
-            </tr>
+            {
+              todos.map((items) => 
+                <tr >
+                  <td>{items}</td>
+                  <td className='w-25'>
+                    <Button className='btn btn-success mx-1'>Update</Button>
+                    <Button className='btn btn-danger'>Delete</Button>
+                  </td>
+                </tr>
+              )
+            }
           </tbody>
         </Table>
       </div>
