@@ -21,7 +21,7 @@ app.get('/todos', (req, res) => {
 });
 
 app.post('/todos', (req, res) => {
-    const { text } = req.body; // Destructure 'text' from the request body
+    const { text } = req.body; 
 
     if (!text) {
         return res.status(400).send('Text field is required');
@@ -33,13 +33,38 @@ app.post('/todos', (req, res) => {
             console.error('Error executing query: ' + err);
             return res.status(500).send('Error inserting todo');
         }
-        res.json({ text }); // Return the new todo ID
+        res.json({ text }); 
     });
 });
 
 
-app.put('/todos/')
+app.put('/todos/:id',(req,res)=>{
+    const {id} = req.params;
+    const {text} = req.body;
 
+    const query = 'update todos set text=? where id = ?';
+    dbConnection.query(query,[text ,id],(err)=>{
+        if (err) {
+            console.error("Error executing query: "+ err);
+            return res.status(500).send('Error updating todo');
+        }
+        res.json({message:'Update successfully ...!'})
+    })
+})
+
+
+app.delete('/todos/:id',(req,res)=>{
+    const {id} = req.params;
+
+    const query = 'delete from todos where id = ?';
+    dbConnection.query(query,[id],(err)=>{
+        if (err) {
+            console.error('Error executing query:'+ err)
+            return res.status(500).send('Error upadting todo');
+        }
+        res.json({message:"delete todo successfully ...!"})
+    })
+})
 
 
 app.listen(PORT, () => {

@@ -37,7 +37,6 @@ function App() {
   const getTodos = async () => {
     try {
       const response = await axios.get(`${url}/todos`)
-      // console.log("Your get API data : ", response);
       setTodos(response.data)
     } catch (error) {
       console.error("Network error...!", error)
@@ -49,25 +48,26 @@ function App() {
   }, [])
 
   const updateTodo = async () => {
-    if (!editingTodo) return; 
+    if (!editingTodo) return;
     try {
-        const response = await axios.put(`${url}/todos/${editingTodo}`, { text });
-        setTodos((prevTodos) =>
-            prevTodos.map((todo) =>
-                todo.id === editingTodo ? response.data : todo
-            )
-        );
-        setText(''); 
-        setEditingTodo(null); 
+      const response = await axios.put(`${url}/todos/${editingTodo}`, { text });
+      setTodos((prevTodos) =>
+        prevTodos.map((todo) =>
+          todo.id === editingTodo ? { ...todo, text } : todo
+        )
+      );
+      setText('');
+      setEditingTodo(null);
+      getTodos();
     } catch (error) {
-        console.error("Error updating todo:", error);
+      console.error("Error updating todo:", error);
     }
-};
+  };
 
-  const deleteTodo = async (id)=>{
+  const deleteTodo = async (id) => {
     try {
       await axios.delete(`${url}/todos/${id}`)
-      setTodos(todos.filter(todos=> todos.id !== id))
+      setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
     } catch (error) {
       console.error("Netwoek Error...!", error)
     }
@@ -77,7 +77,6 @@ function App() {
     if (text.trim() === '') return;
     try {
       const response = await axios.post(`${url}/todos`, { text });
-      console.log("Check Post API data:", response);  //for testing 
       setTodos([...todos, response.data])
       setText('');
     } catch (error) {
@@ -85,11 +84,11 @@ function App() {
     }
   }
 
- const handleEdit = (todos)=>{
-  setText(todos.text)
-  setEditingTodo(todos.id);
+  const handleEdit = (todos) => {
+    setText(todos.text)
+    setEditingTodo(todos.id);
 
- }
+  }
 
 
   return (
@@ -115,12 +114,12 @@ function App() {
         <Table striped bordered hover variant="light" className='w-50'>
           <tbody>
             {
-              todos.map((items,index) => 
+              todos.map((items, index) =>
                 <tr key={index}>
                   <td>{items.text}</td>
                   <td className='w-25'>
-                    <Button className='btn btn-success mx-1' onClick={()=>handleEdit(items)}>Edit</Button>
-                    <Button className='btn btn-danger' onClick={()=>deleteTodo(items.id)}>Delete</Button>
+                    <Button className='btn btn-success mx-1' onClick={() => handleEdit(items)}>Edit</Button>
+                    <Button className='btn btn-danger' onClick={() => deleteTodo(items.id)}>Delete</Button>
                   </td>
                 </tr>
               )
