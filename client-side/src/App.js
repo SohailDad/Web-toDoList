@@ -31,6 +31,7 @@ function App() {
 
   const [todos, setTodos] = useState([]);
   const [text, setText] = useState('');
+  const [editingTodo, setEditingTodo] = useState('');
   const url = 'http://localhost:5000';
 
   const getTodos = async () => {
@@ -47,6 +48,30 @@ function App() {
     getTodos();
   }, [])
 
+  const updateTodo = async () => {
+    if (!editingTodo) return; 
+    try {
+        const response = await axios.put(`${url}/todos/${editingTodo}`, { text });
+        setTodos((prevTodos) =>
+            prevTodos.map((todo) =>
+                todo.id === editingTodo ? response.data : todo
+            )
+        );
+        setText(''); 
+        setEditingTodo(null); 
+    } catch (error) {
+        console.error("Error updating todo:", error);
+    }
+};
+
+  const deleteTodo = async (id)=>{
+    try {
+      await axios.delete(`${url}/todos/${id}`)
+      setTodos(todos.filter(todos=> todos.id !== id))
+    } catch (error) {
+      console.error("Netwoek Error...!", error)
+    }
+  }
 
   const addTodos = async () => {
     if (text.trim() === '') return;
@@ -59,6 +84,13 @@ function App() {
       console.error("Network Error...!", error)
     }
   }
+
+ const handleEdit = (todos)=>{
+  setText(todos.text)
+  setEditingTodo(todos.id);
+
+ }
+
 
   return (
     <div className=' text-center'>
@@ -73,8 +105,8 @@ function App() {
             value={text}
             onChange={(e) => setText(e.target.value)}
           />
-          <Button variant="btn btn-primary" id="button-addon2" onClick={() => addTodos()}>
-            Add ToDos
+          <Button variant="btn btn-primary" id="button-addon2" onClick={() => editingTodo ? updateTodo() : addTodos()}>
+            {!editingTodo ? 'Add ToDos' : 'Update'}
           </Button>
         </InputGroup>
       </div>
@@ -83,12 +115,12 @@ function App() {
         <Table striped bordered hover variant="light" className='w-50'>
           <tbody>
             {
-              todos.map((items) => 
-                <tr >
+              todos.map((items,index) => 
+                <tr key={index}>
                   <td>{items.text}</td>
                   <td className='w-25'>
-                    <Button className='btn btn-success mx-1'>Update</Button>
-                    <Button className='btn btn-danger'>Delete</Button>
+                    <Button className='btn btn-success mx-1' onClick={()=>handleEdit(items)}>Edit</Button>
+                    <Button className='btn btn-danger' onClick={()=>deleteTodo(items.id)}>Delete</Button>
                   </td>
                 </tr>
               )
