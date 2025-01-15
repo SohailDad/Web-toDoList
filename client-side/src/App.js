@@ -31,13 +31,13 @@ function App() {
 
   const [todos, setTodos] = useState([]);
   const [text, setText] = useState('');
-  const url = 'http://localhost:3000/';
+  const url = 'http://localhost:5000';
 
   const getTodos = async () => {
     try {
       const response = await axios.get(`${url}/todos`)
-      console.log("Your get API data : ", response);
-      setTodos([...todos, response.data])
+      // console.log("Your get API data : ", response);
+      setTodos(response.data)
     } catch (error) {
       console.error("Network error...!", error)
     }
@@ -53,6 +53,7 @@ function App() {
     try {
       const response = await axios.post(`${url}/todos`, { text });
       console.log("Check Post API data:", response);  //for testing 
+      setTodos([...todos, response.data])
       setText('');
     } catch (error) {
       console.error("Network Error...!", error)
@@ -84,7 +85,7 @@ function App() {
             {
               todos.map((items) => 
                 <tr >
-                  <td>{items}</td>
+                  <td>{items.text}</td>
                   <td className='w-25'>
                     <Button className='btn btn-success mx-1'>Update</Button>
                     <Button className='btn btn-danger'>Delete</Button>
