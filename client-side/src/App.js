@@ -31,7 +31,7 @@ function App() {
 
   const [todos, setTodos] = useState([]);
   const [text, setText] = useState('');
-  const [editingTodo, setEditingTodo] = useState('');
+  const [editingTodo, setEditingTodo] = useState(null);
   const url = 'http://localhost:5000';
 
   const getTodos = async () => {
@@ -53,7 +53,7 @@ function App() {
       const response = await axios.put(`${url}/todos/${editingTodo}`, { text });
       setTodos((prevTodos) =>
         prevTodos.map((todo) =>
-          todo.id === editingTodo ? { ...todo, text } : todo
+          todo.id === editingTodo ? response.data  : todo
         )
       );
       setText('');
@@ -78,6 +78,7 @@ function App() {
     try {
       const response = await axios.post(`${url}/todos`, { text });
       setTodos([...todos, response.data])
+      getTodos()
       setText('');
     } catch (error) {
       console.error("Network Error...!", error)
@@ -114,7 +115,7 @@ function App() {
         <Table striped bordered hover variant="light" className='w-50'>
           <tbody>
             {
-              todos.map((items, index) =>
+              todos.map((items,index) =>
                 <tr key={index}>
                   <td>{items.text}</td>
                   <td className='w-25'>
